@@ -23,11 +23,27 @@ class User < ApplicationRecord
   # 中間テーブルを介して「followed」モデルのUser(フォローする側)を集めることを「followers」と定義
   has_many :followers, through: :passive_relationships, source: :followed
   
+  validates :name, length: {maximum: 20, minimum: 2}, uniqueness: true
+  validates :introduction, length: {maximum: 50 }
+  
   def followed_by?(user)
     passive_relationships.find_by(followed_id: user.id).present?
   end
   
-
-  validates :name, length: {maximum: 20, minimum: 2}, uniqueness: true
-  validates :introduction, length: {maximum: 50 }
+  def User.search(search, user_or_book, how_search)
+    if user_or_book == "user"
+      if how_search == "match"
+        User.where(['name LIKE ?', "#{search}"])
+      elsif how_search == "forward"
+        User.where(['name LIKE ?', "#{search}%"])
+      elsif how_search == "backward"
+        User.where(['name LIKE ?', "%#{search}"])
+      elsif how_search == "partical"
+        User.where(['name LIKE ?', "%#{search}%"])
+      else
+        User.none
+      end
+    end
+  end
+  
 end

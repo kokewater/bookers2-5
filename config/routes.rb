@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   
   root 'homes#top'
   get 'home/about' => 'homes#about', as: 'about'
+  get 'search' => 'search#search', as: 'search'
   
   resources :users, only: [:show,:index,:edit,:update] do
     resources :relationships, only: [:create, :destroy]
